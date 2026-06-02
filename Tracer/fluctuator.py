@@ -50,8 +50,8 @@ class Fluctuator:
         if method == 'pod':
             self.n_modes = n_modes
             self.a = self.rng.normal(loc=0.0, scale=1, size=n_modes)  # Scale random coefficients to match target TKE distribution across modes
-            self.phi = pod_lib['modes']
-            self.gamma = pod_lib['gamma']
+            self.phi = pod_lib['Phi']
+            self.rans_scale = pod_lib['C']
     
     def get_fluctuation_at(self, pos, tke, epsilon=None, dt=None):
         """
@@ -112,7 +112,7 @@ class Fluctuator:
 
     def _fluctuation_POD(self, tke, z):
         """POD-based fluctuation model."""
-        sigma_target = np.sqrt(tke * (2.0/3.0) * self.gamma[:self.n_modes])  # Target std for each mode based on TKE and mode energy fraction
+        sigma_target = np.sqrt(tke * self.rans_scale)  # Target std for each mode based on TKE and mode energy fraction
         a_local = self.a * sigma_target  # Scale random coefficients to match target TKE distribution across modes
         if self.n_modes == 1:
             fluctuation = a_local[0] * self.phi(z)[0]  # Use only the first mode
