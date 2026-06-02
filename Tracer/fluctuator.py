@@ -112,7 +112,7 @@ class Fluctuator:
 
     def _fluctuation_POD(self, tke, z):
         """POD-based fluctuation model."""
-        sigma_target = np.sqrt(tke * self.rans_scale)  # Target std for each mode based on TKE and mode energy fraction
+        sigma_target = np.sqrt(tke * self.rans_scale[:self.n_modes])  # Target std for each mode based on TKE and mode energy fraction
         a_local = self.a * sigma_target  # Scale random coefficients to match target TKE distribution across modes
         if self.n_modes == 1:
             fluctuation = a_local[0] * self.phi(z)[0]  # Use only the first mode
