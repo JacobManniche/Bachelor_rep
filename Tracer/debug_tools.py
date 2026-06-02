@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 def plot_trajectories(trajectories, plot=True):
     ax = plt.subplots(3, 1, figsize=(10, 8))[1]
     for traj in trajectories:
-        t, p, v, w = traj.traj
-        ax[0].plot(p[:, 0], p[:, 2]) # Plot height vs time
-        ax[1].plot(p[:, 0], p[:, 1]) # Plot horizontal distance vs time
-        ax[2].plot(t, w[:, 1])
+        traj = Trajectory(76, 12, 2000, 1.2)
+        traj.solve(solver='euler', dt=0.01)
+        ax[0].plot(traj.p[:, 0], traj.p[:, 2]) # Plot height vs time
+        ax[1].plot(traj.p[:, 0], traj.p[:, 1]) # Plot horizontal distance vs time
+        ax[2].plot(traj.t, traj.w[:, 1])
 
     ax[0].set_xlabel('Distance (m)')
     ax[0].set_ylabel('Height (m)')
@@ -37,11 +38,12 @@ def plot_coefficients(trajectories, plot=True):
     
     ax = plt.subplots(2, 2, figsize=(10, 8))[1]
     for traj in trajectories:
-        t, p, v, w = traj.traj
-        re = [(norm(v[i]) * (2*r)) / mu for i in range(len(v))] # Reynolds Number calculation
-        s = [norm(w[i]) * r / norm(v[i]) if norm(v[i]) > 0 else 0 for i in range(len(v))] # Spin parameter
-        cd = [coefficients(norm(v[i]), norm(w[i]))[0] for i in range(len(re))]
-        cl = [coefficients(norm(v[i]), norm(w[i]))[1] for i in range(len(re))]
+        traj = Trajectory(76, 12, 2000, 1.2)
+        traj.solve(solver='euler', dt=0.01)
+        re = [(norm(traj.v[i]) * (2*r)) / mu for i in range(len(traj.v))] # Reynolds Number calculation
+        s = [norm(traj.w[i]) * r / norm(traj.v[i]) if norm(traj.v[i]) > 0 else 0 for i in range(len(traj.v))] # Spin parameter
+        cd = [coefficients(norm(traj.v[i]), norm(traj.w[i]))[0] for i in range(len(re))]
+        cl = [coefficients(norm(traj.v[i]), norm(traj.w[i]))[1] for i in range(len(re))]
         
         ax[0, 0].plot(re, cd) # Plot height vs time
         ax[1, 0].plot(s, cl) # Plot horizontal distance vs time
@@ -74,7 +76,7 @@ def plot_coefficients(trajectories, plot=True):
         return ax
 
 if __name__ == "__main__":
-    from .tracer import Trajectory
+    from Tracer import Trajectory
     t = []
     for decay in [0.05, 0.1, 0.2, 1]:
         t.append(Trajectory(76, 12, 2000, 1.2).solve())
