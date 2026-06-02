@@ -56,7 +56,7 @@ def coefficients(v, w):
     """
     
     # Calculate Reynolds Number and Spin Parameter
-    re = (v * (2 * r)) / mu
+    re = rho * (v * (2 * r)) / mu
     s = (w * r) / v if v > 0 else 0  # spin parameter, avoid division by zero
     
     # Lift Coefficient
