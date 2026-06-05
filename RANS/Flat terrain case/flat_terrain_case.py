@@ -61,7 +61,7 @@ def main():
     hub_height = 90.0
     h_i = np.array([hub_height])
 
-    z0 = 0.003
+    z0 = 0.03
 
     wd = [270.0]
     ws = [6.0]
@@ -75,7 +75,7 @@ def main():
     set_cluster_vars(run_machine, True, 'hpc', corespernode=32, maxnodes=3)
 
     wfpostflow = WFPostFlow(outputformat='netCDFmb', single_precision_netCDF=True, cluster = Cluster(gbar_mem = 6, walltime = '6:00:00'))
-
+    
     flowmodel = EllipSys(Hornsrev1Site(), wt, grid,TI, zRef, ad=AD(force='0000', run_pre=False),
                                 wfrun=WFRun(casename='Flat_z0025m_1m', cluster = Cluster(walltime = '56:00:00'), write_restart=True),
                                 wfpostflow=wfpostflow, run_wd_con=False)
