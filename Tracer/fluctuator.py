@@ -41,8 +41,9 @@ class Fluctuator:
         self.seed = seed
         self.rng = np.random.default_rng(seed)
 
-        if seed == None:
-            self.seed = np.random.randint(0, 2**32-1)  # Base seed for reproducibility
+        if seed is None:
+            # Generates a highly secure, platform-independent pool of random data
+            self.seed = np.random.SeedSequence().entropy
         
         if method in ['ou', 'langevin']:
             self._last_fluctuation = np.zeros(3)  # Initialize last fluctuation
@@ -128,7 +129,7 @@ class Fluctuator:
         if method is simple, OU, or Langevin, it will show the fluctuation profile across the specified time range.
         """
         import matplotlib.pyplot as plt
-        
+        colors = plt.cm.seismic([0.0, 0.35, 0.8])
         # Create figure and axes if not provided
         if not ax:
             fig, ax = plt.subplots(figsize=(10, 6))
@@ -136,16 +137,16 @@ class Fluctuator:
         values = np.linspace(range[0], range[1], num_points)
         if self.method == 'pod':
             fluctuations = np.array([self._fluctuation_POD(tke, z) for z in values])  # Use tke=1.0 for visualization
-            ax.plot(fluctuations[:, 0], values, label="u' (x-fluctuation)")
-            ax.plot(fluctuations[:, 1], values, label="v' (y-fluctuation)")
-            ax.plot(fluctuations[:, 2], values, label="w' (z-fluctuation)")
+            ax.plot(fluctuations[:, 0], values, label="u' (x-fluctuation)", color=colors[0])
+            ax.plot(fluctuations[:, 1], values, label="v' (y-fluctuation)", color=colors[1])
+            ax.plot(fluctuations[:, 2], values, label="w' (z-fluctuation)", color=colors[2])
             ax.set_ylabel('Height (z)')
             ax.set_xlabel('Fluctuation')
         elif self.method in ['simple', 'ou', 'langevin']:
             fluctuations = np.array([self.get_fluctuation_at((0, 0, 0), tke=tke, epsilon=epsilon, dt=values[1]) for t in values])  # Use tke=1.0 for visualization
-            ax.plot(values, fluctuations[:, 0], label="u' (x-fluctuation)")
-            ax.plot(values, fluctuations[:, 1], label="v' (y-fluctuation)")
-            ax.plot(values, fluctuations[:, 2], label="w' (z-fluctuation)")
+            ax.plot(values, fluctuations[:, 0], label="u' (x-fluctuation)", color=colors[0])
+            ax.plot(values, fluctuations[:, 1], label="v' (y-fluctuation)", color=colors[1])
+            ax.plot(values, fluctuations[:, 2], label="w' (z-fluctuation)", color=colors[2])
             ax.set_xlabel('Time')
             ax.set_ylabel('Fluctuation')
         ax.legend()
@@ -161,5 +162,8 @@ if __name__ == "__main__":
     fluc.plot(range=(0, 100), num_points=200, tke=10)
 
     fig, ax = plt.subplots(2, 1, figsize=(10, 6))
-    fluc_ou = Fluctuator(method='OU', dt=0.01, Tg=0.1)
-    fluc_ou.plot(range=(0, 100), num_points=200, tke=10, ax=ax[0])
+    fluc = Fluctuator(method='simple')
+    fluc.plot(range=(0, 100), num_points=200, tke=10, ax=ax[0])
+    fluc = Fluctuator(method='Langevin')
+    fluc.plot(range=(0, 100), num_points=200, tke=10, ax=ax[1])
+    
