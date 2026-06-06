@@ -67,7 +67,7 @@ class Trajectory:
         - dt: Time step for the solver (only visual for rk45 can be set to None).
         - kwargs: Additional parameters to pass to the solver 
             decay_rate: Decay rate for spin (default: 0.05)
-            r_tol: Relative tolerance for RK45 (default: 1e-6)
+            rtol: Relative tolerance for RK45 (default: 1e-6)
             mt: Max time for rk45 solver (default: 15 seconds)
         Returns:
         - t: Array of time steps
@@ -166,26 +166,3 @@ class PGA(Trajectory):
             wind=wind,
             fluc=fluc
         )
-
-if __name__ == "__main__":
-    from Tracer.fluctuator import Fluctuator
-    # Example usage
-    wind = WindField(profile='log', U_ref=8, z_ref=10, z0=0.03, direction=45)
-
-    landing_points = {method: [] for method in ['simple', 'Langevin', 'POD']}
-
-    for method in ['simple', 'Langevin', 'POD']:
-        for i in range(10):
-            fluc = Fluctuator(method=method, C0=2.1, cf=1.0)
-            traj = Trajectory(
-                ball_speed=76, 
-                launch_angle=13, 
-                spin_rate=2500,
-                wind=wind,
-                fluc=fluc
-            )
-            if method in ['Langevin', 'simple']:
-                traj.solve(solver='euler')
-            else:
-                traj.solve('rk45')
-            landing_points[method].append(traj.p[-1][:2])

@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 def plot_trajectories(trajectories, plot=True):
     ax = plt.subplots(3, 1, figsize=(10, 8))[1]
     for traj in trajectories:
-        traj = Trajectory(76, 12, 2000, 1.2)
         traj.solve(solver='euler', dt=0.01)
         ax[0].plot(traj.p[:, 0], traj.p[:, 2]) # Plot height vs time
         ax[1].plot(traj.p[:, 0], traj.p[:, 1]) # Plot horizontal distance vs time
