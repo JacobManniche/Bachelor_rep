@@ -42,7 +42,7 @@ class Fluctuator:
         self.rng = np.random.default_rng(seed)
 
         if seed == None:
-            self.seed = np.random.randint(0, 2**32)  # Base seed for reproducibility
+            self.seed = np.random.randint(0, 2**32-1)  # Base seed for reproducibility
         
         if method in ['ou', 'langevin']:
             self._last_fluctuation = np.zeros(3)  # Initialize last fluctuation
